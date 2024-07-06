@@ -10,15 +10,19 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markers = [];
 
 // Function to add a marker
-function addMarker(lat, lng, title, description) {
+function addMarker(place_id, lat, lng, title, description) {
     const marker = L.marker([lat, lng]).addTo(map);
     marker.bindPopup(title);
     
     marker.on('click', function() {
-        document.getElementById('marker-info').innerHTML = `
-            <h3>${title}</h3>
-            <p>${description}</p>
-        `;
+
+        // Fetch the prediction times for the station
+        current_time_in_iso_format = new Date().toISOString();
+        fetch(`/proxy/predictions?place_id=${place_id}&time=${current_time_in_iso_format}`)
+            .then(response => response.json())
+            .then(predictions => {
+                console.log(predictions);
+            })
     });
     
     markers.push(marker);
@@ -32,7 +36,9 @@ function fetchStationsAndAddMarkers() {
         .then(response => response.json())
         .then(stations => {
             stations.forEach(station => {
-                addMarker(station.lat, station.lon, station.common_name, station.description);
+                addMarker(
+                    station.place_id, station.lat, 
+                    station.lon, station.common_name, station.description);
             });
 
             // Fit map to bounds
