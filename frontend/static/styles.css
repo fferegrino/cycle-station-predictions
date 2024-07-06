@@ -1,0 +1,27 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
+
+#map-container {
+    display: flex;
+    height: 100%;
+}
+
+#map {
+    flex: 1;
+    height: 100%;
+}
+
+#side-panel {
+    width: 300px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    overflow-y: auto;
+}
+
+#marker-info {
+    margin-top: 20px;
+}
