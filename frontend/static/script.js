@@ -20,9 +20,36 @@ function addMarker(place_id, lat, lng, title, description) {
         current_time_in_iso_format = new Date().toISOString();
         fetch(`/proxy/predictions?place_id=${place_id}&time=${current_time_in_iso_format}`)
             .then(response => response.json())
-            .then(predictions => {
-                console.log(predictions);
-            })
+            .then(prediction => {
+                const predictionsContainer = document.getElementById('marker-info'); // Step 1: Assume there's an element with this ID in your HTML
+
+
+                    // Step 2: Create a new div element to hold the prediction details
+                    predictionsContainer.innerHTML = ''; // Clear previous predictions
+
+                    const predictionElement = document.createElement('div'); // Step 3
+                    predictionElement.className = 'prediction'; // Optional: for styling
+            
+                    // Adding place ID, model version, and run ID
+                    predictionElement.innerHTML = `
+                        <h3>Place ID: ${prediction.place_id}</h3>
+                        <p>Model Version: ${prediction.model_info.version}, Run ID: ${prediction.model_info.run_id}</p>
+                    `;
+            
+                    // Step 4: Iterate over each prediction detail and add it to the predictionElement
+                    prediction.predictions.forEach(pred => {
+                        predictionElement.innerHTML += `
+                            <div>
+                                <p>Time: ${pred.time}</p>
+                                <p>Occupancy Ratio: ${pred.occupancy_ratio.toFixed(2)}</p>
+                                <p>Range: [${pred.occupancy_ratio_lower.toFixed(2)}, ${pred.occupancy_ratio_upper.toFixed(2)}]</p>
+                            </div>
+                        `;
+                    });
+            
+                    predictionsContainer.appendChild(predictionElement); // Step 5
+
+        });
     });
     
     markers.push(marker);

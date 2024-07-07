@@ -69,6 +69,7 @@ services:
     networks:
       - frontend
       - backend
+      - shared_network
     environment:
       - AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
       - AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_ACCESS_KEY}
@@ -92,3 +93,5 @@ networks:
     driver: bridge
   backend:
     driver: bridge
+  shared_network:
+    external: true

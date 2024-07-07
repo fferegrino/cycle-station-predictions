@@ -7,8 +7,21 @@ services:
       - "5002:5000"
     environment:
       - PREDICTION_SERVICE_URL=http://prediction_service:80
+    networks:
+      - frontend
 
   prediction_service:
     build: ./prediction_service
+    environment:
+      - MLFLOW_TRACKING_URI=http://tracking_server:5000
+    networks:
+      - shared_network
+      - frontend
     ports:
       - "5001:80"
+
+networks:
+  frontend:
+    driver: bridge
+  shared_network:
+    external: true
