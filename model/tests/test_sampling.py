@@ -1,7 +1,7 @@
 import polars as pl
 from polars.testing import assert_frame_equal
 
-from sampling import resample
+from model.training.sampling import resample
 
 
 def test_resample():
@@ -11,9 +11,7 @@ def test_resample():
             "place_id": ["1", "1", "1"],
             "value": [1, None, 3],
         }
-    ).with_columns(
-        pl.col('rounded_time').str.strptime(pl.Datetime, '%Y-%m-%d %H:%M:%S')
-    )
+    ).with_columns(pl.col("rounded_time").str.strptime(pl.Datetime, "%Y-%m-%d %H:%M:%S"))
 
     resampled = resample(df)
 
@@ -28,9 +26,7 @@ def test_resample():
             "place_id": ["1", "1", "1", "1"],
             "value": [1.0, 1.6666666666666665, 2.333333333333333, 3.0],
         }
-    ).with_columns(
-        pl.col('rounded_time').str.strptime(pl.Datetime, '%Y-%m-%d %H:%M:%S')
-    )
+    ).with_columns(pl.col("rounded_time").str.strptime(pl.Datetime, "%Y-%m-%d %H:%M:%S"))
 
     assert_frame_equal(resampled, expected)
 
@@ -42,9 +38,7 @@ def test_resample_drops_duplicate_dates():
             "place_id": ["1", "1", "1"],
             "value": [1, None, 3],
         }
-    ).with_columns(
-        pl.col('rounded_time').str.strptime(pl.Datetime, '%Y-%m-%d %H:%M:%S')
-    )
+    ).with_columns(pl.col("rounded_time").str.strptime(pl.Datetime, "%Y-%m-%d %H:%M:%S"))
 
     resampled = resample(df)
 
@@ -57,8 +51,6 @@ def test_resample_drops_duplicate_dates():
             "place_id": ["1", "1"],
             "value": [1.0, 3.0],
         }
-    ).with_columns(
-        pl.col('rounded_time').str.strptime(pl.Datetime, '%Y-%m-%d %H:%M:%S')
-    )
+    ).with_columns(pl.col("rounded_time").str.strptime(pl.Datetime, "%Y-%m-%d %H:%M:%S"))
 
     assert_frame_equal(resampled, expected)

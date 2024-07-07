@@ -3,6 +3,9 @@ name: Run training
 on:
   workflow_dispatch:
 
+env:
+  MLFLOW_TRACKING_URI: databricks
+
 jobs:
   training:
     name: Training
@@ -23,9 +26,18 @@ jobs:
       run: |
         MLFLOW_RUN_ID=$(python model/training/run.py)
         echo "MLFLOW_RUN_ID=$MLFLOW_RUN_ID" >> $GITHUB_ENV
+      env:
+        DATABRICKS_USERNAME: ${{ secrets.DATABRICKS_USERNAME }}
+        DATABRICKS_PASSWORD: ${{ secrets.DATABRICKS_PASSWORD }}
 
     - name: Download dataset
       run: python model/training/download_dataset.py
+      env:
+        DATABRICKS_USERNAME: ${{ secrets.DATABRICKS_USERNAME }}
+        DATABRICKS_PASSWORD: ${{ secrets.DATABRICKS_PASSWORD }}
 
     - name: Prepare dataset
       run: python model/training/preprocessing.py
+      env:
+        DATABRICKS_USERNAME: ${{ secrets.DATABRICKS_USERNAME }}
+        DATABRICKS_PASSWORD: ${{ secrets.DATABRICKS_PASSWORD }}

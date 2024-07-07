@@ -1,8 +1,7 @@
 # Tested with Python 3.10.12
-polars-lts-cpu==1.0.0
-# prophet==1.1.5
+polars==1.0.0
+prophet==1.1.5
 numpy==1.26.4
-# pyarrow==16.1.0
-# plotly==5.22.0
-# statsmodels==0.14.2
+pyarrow==16.1.0
+plotly==5.22.0
 mlflow==2.14.2

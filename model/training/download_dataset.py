@@ -1,9 +1,10 @@
 import os
-import mlflow
 import subprocess
 import time
 
-MLFLOW_RUN_ID=os.environ["MLFLOW_RUN_ID"]
+import mlflow
+
+MLFLOW_RUN_ID = os.environ["MLFLOW_RUN_ID"]
 
 # Define the directory and repository
 directory = "temp_data/weekly-london-cycles-db"
@@ -22,12 +23,11 @@ with mlflow.start_run(run_id=MLFLOW_RUN_ID):
     else:
         # Directory exists, print a message
         print(f"The repository already exists in the `{directory}` folder.")
-    
 
     os.chdir(directory)
 
     # Get the latest commit hash
-    commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode('utf-8').strip()
+    commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("utf-8").strip()
 
     mlflow.log_param("dataset_commit_hash", commit_hash)
 

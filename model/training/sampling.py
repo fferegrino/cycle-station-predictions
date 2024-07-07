@@ -1,7 +1,7 @@
 import polars as pl
 
-def resample(df, min_date=None, max_date=None, interval="15m"):
 
+def resample(df, min_date=None, max_date=None, interval="15m"):
     if min_date is None:
         min_date = df["rounded_time"].min()
     if max_date is None:
@@ -25,4 +25,3 @@ def resample(df, min_date=None, max_date=None, interval="15m"):
     interpolated = interpolated.unique(subset=["rounded_time"])
 
     return interpolated.interpolate()
-
