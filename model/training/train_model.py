@@ -50,6 +50,13 @@ with mlflow.start_run(run_id=MLFLOW_RUN_ID):
 
     mlflow.prophet.log_model(prophet, f"{PLACE_ID}/prophet_model")
 
+    version = mlflow.register_model(f"runs:/{MLFLOW_RUN_ID}/{PLACE_ID}/prophet_model", f"{PLACE_ID}__prophet_model")
+    client.set_registered_model_alias(
+        version.name,
+        f"challenger",
+        version.version,
+    )
+
     future = (
         holdout_data.with_columns(pl.col("rounded_time").dt.strftime("%Y-%m-%d %H:%M:%S").alias("ds"))
         .select(["ds", "occupancy_ratio"])
