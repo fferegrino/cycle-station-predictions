@@ -22,32 +22,33 @@ function addMarker(place_id, lat, lng, title, description) {
             .then(response => response.json())
             .then(prediction => {
                 const predictionsContainer = document.getElementById('marker-info'); // Step 1: Assume there's an element with this ID in your HTML
+                
+                    console.log(JSON.stringify(prediction));
 
+                    // // Step 2: Create a new div element to hold the prediction details
+                    // predictionsContainer.innerHTML = ''; // Clear previous predictions
 
-                    // Step 2: Create a new div element to hold the prediction details
-                    predictionsContainer.innerHTML = ''; // Clear previous predictions
-
-                    const predictionElement = document.createElement('div'); // Step 3
-                    predictionElement.className = 'prediction'; // Optional: for styling
+                    // const predictionElement = document.createElement('div'); // Step 3
+                    // predictionElement.className = 'prediction'; // Optional: for styling
             
-                    // Adding place ID, model version, and run ID
-                    predictionElement.innerHTML = `
-                        <h3>Place ID: ${prediction.place_id}</h3>
-                        <p>Model Version: ${prediction.model_info.version}, Run ID: ${prediction.model_info.run_id}</p>
-                    `;
+                    // // Adding place ID, model version, and run ID
+                    // predictionElement.innerHTML = `
+                    //     <h3>Place ID: ${prediction.place_id}</h3>
+                    //     <p>Model Version: ${prediction.model_info.version}, Run ID: ${prediction.model_info.run_id}</p>
+                    // `;
             
-                    // Step 4: Iterate over each prediction detail and add it to the predictionElement
-                    prediction.predictions.forEach(pred => {
-                        predictionElement.innerHTML += `
-                            <div>
-                                <p>Time: ${pred.time}</p>
-                                <p>Occupancy Ratio: ${pred.occupancy_ratio.toFixed(2)}</p>
-                                <p>Range: [${pred.occupancy_ratio_lower.toFixed(2)}, ${pred.occupancy_ratio_upper.toFixed(2)}]</p>
-                            </div>
-                        `;
-                    });
+                    // // Step 4: Iterate over each prediction detail and add it to the predictionElement
+                    // prediction.predictions.forEach(pred => {
+                    //     predictionElement.innerHTML += `
+                    //         <div>
+                    //             <p>Time: ${pred.time}</p>
+                    //             <p>Occupancy Ratio: ${pred.occupancy_ratio.toFixed(2)}</p>
+                    //             <p>Range: [${pred.occupancy_ratio_lower.toFixed(2)}, ${pred.occupancy_ratio_upper.toFixed(2)}]</p>
+                    //         </div>
+                    //     `;
+                    // });
             
-                    predictionsContainer.appendChild(predictionElement); // Step 5
+                    // predictionsContainer.appendChild(predictionElement); // Step 5
 
         });
     });

@@ -14,11 +14,53 @@ services:
     build: ./prediction_service
     environment:
       - MLFLOW_TRACKING_URI=http://tracking_server:5000
+      - LOGSTASH_HOST=logstash
+      - LOGSTASH_PORT=5000
     networks:
       - shared_network
       - frontend
     ports:
       - "5001:80"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    networks:
+      - frontend
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.14.0
+    container_name: logstash
+    volumes:
+      - ./monitoring/logstash/pipeline:/usr/share/logstash/pipeline
+    ports:
+      - "5009:5000"
+    networks:
+      - frontend
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.14.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    networks:
+      - frontend
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    depends_on:
+      - elasticsearch
+
+volumes:
+  elasticsearch_data:
 
 networks:
   frontend:
