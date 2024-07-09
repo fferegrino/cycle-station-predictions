@@ -1,27 +1,35 @@
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: Arial, sans-serif;
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
 }
 
 #map-container {
-    display: flex;
-    height: 100%;
+  display: flex;
+  height: 100%;
 }
 
 #map {
-    flex: 1;
-    height: 100%;
+  flex: 1;
+  height: 100%;
 }
 
 #side-panel {
-    width: 300px;
-    padding: 20px;
-    background-color: #f0f0f0;
-    overflow-y: auto;
+  width: 300px;
+  padding: 20px;
+  background-color: #f0f0f0;
+  overflow-y: auto;
 }
 
 #marker-info {
-    margin-top: 20px;
+  margin-top: 20px;
+}
+
+.bar {
+  width: 20px; /* Adjust based on the number of bars */
+  margin: 0px; /* Space between bars */
+  background-color: #4caf50; /* Bar color */
+  text-align: center;
 }

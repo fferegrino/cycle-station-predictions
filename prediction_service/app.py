@@ -93,7 +93,8 @@ async def get_predictions(place_id: str, time: str, horizon: int = 20):
         "request_id": request_id,
         "place_id": place_id,
         "requested_time": time,
-        "served_time": datetime.now().isoformat(),
+        "served_time": parsed_time.isoformat(),
+        "timestamp": datetime.now().isoformat(),
         "horizon": horizon,
     }
 
