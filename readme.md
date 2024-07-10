@@ -30,7 +30,7 @@ docker compose -f serving.docker-compose.yml up
 Create an index pattern in Elastic:
 
 ```bash
-python monitoring/create_pattern.py
+python monitoring/create_index_pattern.py
 ```
 
 Kickstart the training workflow with:

@@ -53,3 +53,8 @@ html {
   height: 10px;
   font-size: 0.5em;
 }
+
+.modelInfo {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8em;
+}

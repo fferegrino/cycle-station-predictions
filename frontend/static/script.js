@@ -25,25 +25,17 @@ function addMarker(place_id, lat, lng, title, description) {
       .then((prediction) => {
         const predictionsContainer = document.getElementById("marker-info"); // Step 1: Assume there's an element with this ID in your HTML
 
-        console.log(JSON.stringify(prediction));
+        // console.log(JSON.stringify(prediction));
+        
+        predictionsContainer.innerHTML = ""; 
 
-        // Step 2: Create a new div element to hold the prediction details
-        predictionsContainer.innerHTML = ""; // Clear previous predictions
+        const h2PlaceName= document.getElementById("place-name");
+        h2PlaceName.textContent = title;
 
         const predictionElement = document.createElement("div"); // Step 3
         predictionElement.className = "prediction"; // Optional: for styling
 
-        // Create the request paragraph element
-        const requestParagraph = document.createElement("p");
-        requestParagraph.textContent = `Request: ${prediction.request.request_id}`;
-
-        // Create the model paragraph element
-        const modelParagraph = document.createElement("p");
-        modelParagraph.textContent = `Model: ${prediction.model.name}@${prediction.model.version}`;
-
         // Append the paragraphs to the predictionElement
-        predictionElement.appendChild(requestParagraph);
-        predictionElement.appendChild(modelParagraph);
 
         // Create the div element
         const barChartContainer = document.createElement("div");
@@ -66,8 +58,21 @@ function addMarker(place_id, lat, lng, title, description) {
           bar.appendChild(timeLabelContainer);
         });
 
-        // Append the div to the body or another container element
-        predictionElement.appendChild(barChartContainer); // Assuming you want to append it to the body
+        predictionElement.appendChild(barChartContainer); 
+
+
+        // Create the request paragraph element
+        const requestParagraph = document.createElement("p");
+        requestParagraph.className = "modelInfo";
+        requestParagraph.textContent = `Request: ${prediction.request.request_id}`;
+
+        // Create the model paragraph element
+        const modelParagraph = document.createElement("p");
+        modelParagraph.className = "modelInfo";
+        modelParagraph.textContent = `Model: ${prediction.model.name}@${prediction.model.version}`;
+
+        predictionElement.appendChild(requestParagraph);
+        predictionElement.appendChild(modelParagraph);
 
         predictionsContainer.appendChild(predictionElement); // Step 5
       });
