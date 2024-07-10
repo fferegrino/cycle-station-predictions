@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import random
@@ -14,12 +15,18 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-
+REGIONS = {}
 MODELS = {}
+STATIONS = {}
 
 # Get Logstash host and port from environment variables
 LOGSTASH_HOST = os.environ.get("LOGSTASH_HOST", "localhost")
 LOGSTASH_PORT = int(os.environ.get("LOGSTASH_PORT", 5000))
+
+with open("stations_data.json") as f:
+    data = json.load(f)
+    for station in data:
+        STATIONS[station["place_id"]] = station
 
 # Create logger
 logger = logging.getLogger("python-logstash-logger")
@@ -37,6 +44,10 @@ logger.addHandler(stdout_handler)
 
 
 def fill_model_cache():
+    global MODELS
+    global REGIONS
+
+    REGIONS = {}
     client = MlflowClient()
     registered_models = client.search_registered_models(
         filter_string="tags.cycle_prediction='true'",
@@ -49,6 +60,12 @@ def fill_model_cache():
             model_name, *_ = registered_model.name.split("__")
             MODELS[model_name] = (model_version, model)
             logger.info("model loaded successfully", extra={"model": model_version.name})
+
+            if not REGIONS:
+                regions_folder = client.download_artifacts(run_id=model_version.run_id, path="regions.json")
+                with open(regions_folder) as f:
+                    REGIONS = json.load(f)
+
         except Exception as e:
             logger.error("model failed to load", extra={"model": registered_model.name, "error": str(e)})
 
@@ -60,11 +77,30 @@ async def get_predictions(place_id: str, time: str, horizon: int = 20):
 
     request_id = str(uuid4())
 
-    if place_id not in MODELS:
-        logger.warning("model not found", extra={"place_id": place_id})
-        model_version, model = random.choice(list(MODELS.values()))
-    else:
-        model_version, model = MODELS[place_id]
+    station_info = STATIONS.get(place_id)
+
+    if not station_info:
+        logger.warning("station not found", extra={"place_id": place_id})
+        return {"error": "station not found"}
+
+    station_lat = station_info["lat"]
+    station_lon = station_info["lon"]
+
+    region = None
+
+    for region_name, region_data in REGIONS.items():
+        if (
+            region_data["lat_min"] < station_lat <= region_data["lat_max"]
+            and region_data["lon_min"] < station_lon <= region_data["lon_max"]
+        ):
+            region = region_name
+            break
+
+    if not region:
+        logger.warning("region not found", extra={"place_id": place_id})
+        return {"error": "region not found"}
+
+    model_version, model = MODELS[region]
 
     # move `parsed_time`  to the nearest 15 minute interval
     parsed_time = parsed_time - timedelta(minutes=parsed_time.minute % 15, seconds=parsed_time.second)
@@ -91,6 +127,7 @@ async def get_predictions(place_id: str, time: str, horizon: int = 20):
         "name": model_version.name,
         "run_id": model_version.run_id,
         "artifact_uri": model_version.source,
+        "region": region,
     }
 
     request_info = {
