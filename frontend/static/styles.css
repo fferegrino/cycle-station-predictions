@@ -27,9 +27,29 @@ html {
   margin-top: 20px;
 }
 
+
+.barChartContainer {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  height: 200px;
+  overflow: scroll;
+  border: 1px solid #ccc;
+}
+
 .bar {
-  width: 20px; /* Adjust based on the number of bars */
-  margin: 0px; /* Space between bars */
-  background-color: #4caf50; /* Bar color */
+  width: 10px; 
+  margin: 0px;
+  background-color: #4caf50;
   text-align: center;
+}
+
+.timeLabel {
+  width: 100%;
+  display: flex;
+  transform: rotate(90deg);
+  color: black;
+  align-items: center;
+  height: 10px;
+  font-size: 0.5em;
 }

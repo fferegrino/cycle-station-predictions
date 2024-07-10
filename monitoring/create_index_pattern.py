@@ -1,5 +1,6 @@
-import requests
 import json
+
+import requests
 
 kibana_url = "http://localhost:5601"
 
@@ -8,10 +9,8 @@ index_pattern_name = "prediction_service-*"
 create_api_endpoint = f"{kibana_url}/api/index_patterns/index_pattern"
 delete_api_endpoint = f"{kibana_url}/api/index_patterns/index_pattern/{index_pattern_name}"
 
-headers = {
-    "kbn-xsrf": "true",
-    "Content-Type": "application/json"
-}
+headers = {"kbn-xsrf": "true", "Content-Type": "application/json"}
+
 
 def delete_index_pattern():
     response = requests.delete(delete_api_endpoint, headers=headers)
@@ -23,14 +22,8 @@ def delete_index_pattern():
         print(f"Failed to delete index pattern. Status code: {response.status_code}")
         print(response.text)
 
-index_pattern = {
-    "index_pattern": {
-        "title": index_pattern_name,
-        "timeFieldName": "request.timestamp",
-        "fields": {
-        }
-    }
-}
+
+index_pattern = {"index_pattern": {"title": index_pattern_name, "timeFieldName": "request.timestamp", "fields": {}}}
 
 delete_index_pattern()
 

@@ -57,6 +57,12 @@ with mlflow.start_run(run_id=MLFLOW_RUN_ID):
         version.version,
     )
 
+    client.set_registered_model_tag(
+        version.name,
+        "cycle_prediction",
+        "true",
+    )
+
     future = (
         holdout_data.with_columns(pl.col("rounded_time").dt.strftime("%Y-%m-%d %H:%M:%S").alias("ds"))
         .select(["ds", "occupancy_ratio"])

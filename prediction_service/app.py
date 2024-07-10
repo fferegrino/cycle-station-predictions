@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 import sys
 from datetime import datetime, timedelta
 from uuid import uuid4
@@ -37,16 +38,19 @@ logger.addHandler(stdout_handler)
 
 def fill_model_cache():
     client = MlflowClient()
-    models = ["BikePoints_10"]
-    for model_name in models:
+    registered_models = client.search_registered_models(
+        filter_string="tags.cycle_prediction='true'",
+    )
+
+    for registered_model in registered_models:
         try:
-            model_version = client.get_model_version_by_alias(f"{model_name}__prophet_model", "champion")
-            model = mlflow.prophet.load_model(f"models:/{model_name}__prophet_model@champion")
+            model_version = client.get_model_version_by_alias(registered_model.name, "champion")
+            model = mlflow.prophet.load_model(f"models:/{registered_model.name}@champion")
+            model_name, *_ = registered_model.name.split("__")
             MODELS[model_name] = (model_version, model)
-            print(f"Model {model_name} loaded successfully")
+            logger.info("model loaded successfully", extra={"model": model_version.name})
         except Exception as e:
-            print(f"Error retrieving model {model_name} {e}")
-            pass
+            logger.error("model failed to load", extra={"model": registered_model.name, "error": str(e)})
 
 
 @app.get("/predictions/")
@@ -57,8 +61,8 @@ async def get_predictions(place_id: str, time: str, horizon: int = 20):
     request_id = str(uuid4())
 
     if place_id not in MODELS:
-        print(f"Model for {place_id} not found, defaulting to existing models")
-        model_version, model = MODELS["BikePoints_10"]
+        logger.warning("model not found", extra={"place_id": place_id})
+        model_version, model = random.choice(list(MODELS.values()))
     else:
         model_version, model = MODELS[place_id]
 

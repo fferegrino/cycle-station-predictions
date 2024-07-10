@@ -19,7 +19,7 @@ function addMarker(place_id, lat, lng, title, description) {
     // Fetch the prediction times for the station
     current_time_in_iso_format = new Date().toISOString();
     fetch(
-      `/proxy/predictions?place_id=${place_id}&time=${current_time_in_iso_format}`
+      `/proxy/predictions?place_id=${place_id}&time=${current_time_in_iso_format}&horizon=50`
     )
       .then((response) => response.json())
       .then((prediction) => {
@@ -47,17 +47,10 @@ function addMarker(place_id, lat, lng, title, description) {
 
         // Create the div element
         const barChartContainer = document.createElement("div");
+        barChartContainer.className = "barChartContainer";
 
         // Set the id
         barChartContainer.id = "barChartContainer";
-
-        // Set the style
-        barChartContainer.style.width = "100%";
-        barChartContainer.style.display = "flex";
-        barChartContainer.style.alignItems = "flex-end";
-        barChartContainer.style.height = "200px";
-        barChartContainer.style.overflow = "scroll";
-        barChartContainer.style.border = "1px solid #ccc";
 
         prediction.predictions.forEach((pred) => {
           const bar = document.createElement("div");
@@ -67,12 +60,7 @@ function addMarker(place_id, lat, lng, title, description) {
           barChartContainer.appendChild(bar);
 
           const timeLabelContainer = document.createElement("div");
-          timeLabelContainer.style.width = "100%";
-          timeLabelContainer.style.display = "flex";
-          timeLabelContainer.style.transform = "rotate(90deg)";
-          timeLabelContainer.style.color = "black";
-          timeLabelContainer.style.alignItems = "center";
-          timeLabelContainer.style.height = "20px";
+          timeLabelContainer.className = "timeLabel";
           timeLabelContainer.textContent = pred.time.slice(11, 16);
 
           bar.appendChild(timeLabelContainer);
