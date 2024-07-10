@@ -10,9 +10,19 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 // Array to store markers
 const markers = [];
 
+const iconSize = 64;
+const customIcon = L.icon({
+  iconUrl: "location-64.png", // Path to the custom icon image
+  iconSize: [iconSize / 2, iconSize / 2], // Size of the icon
+  iconAnchor: [iconSize / 4, iconSize / 2], // Point of the icon which will correspond to marker's location
+  popupAnchor: [0, (-1 * iconSize) / 2], // Point from which the popup should open relative to the iconAnchor
+});
+
 // Function to add a marker
 function addMarker(place_id, lat, lng, title, description) {
-  const marker = L.marker([lat, lng]).addTo(map);
+  const marker = L.marker([lat, lng], {
+    icon: customIcon,
+  }).addTo(map);
   marker.bindPopup(title);
 
   marker.on("click", function () {
@@ -26,10 +36,10 @@ function addMarker(place_id, lat, lng, title, description) {
         const predictionsContainer = document.getElementById("marker-info"); // Step 1: Assume there's an element with this ID in your HTML
 
         // console.log(JSON.stringify(prediction));
-        
-        predictionsContainer.innerHTML = ""; 
 
-        const h2PlaceName= document.getElementById("place-name");
+        predictionsContainer.innerHTML = "";
+
+        const h2PlaceName = document.getElementById("place-name");
         h2PlaceName.textContent = title;
 
         const predictionElement = document.createElement("div"); // Step 3
@@ -58,8 +68,7 @@ function addMarker(place_id, lat, lng, title, description) {
           bar.appendChild(timeLabelContainer);
         });
 
-        predictionElement.appendChild(barChartContainer); 
-
+        predictionElement.appendChild(barChartContainer);
 
         // Create the request paragraph element
         const requestParagraph = document.createElement("p");
