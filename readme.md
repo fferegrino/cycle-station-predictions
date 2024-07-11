@@ -3,6 +3,11 @@
 
 ## Run locally
 
+### Requirements
+
+ - [Docker](https://www.docker.com/)
+ - [act](https://github.com/nektos/act) - Run your GitHub Actions locally 🚀
+
 Create a Python virtual environment and install the dependencies in `model/requirements.txt`:
 
 ```bash

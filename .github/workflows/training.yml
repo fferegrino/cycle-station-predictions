@@ -17,9 +17,12 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: "3.10.12"
+
     - name: Install dependencies
-      run: |
-        pip install mlflow==2.14.2
+      run: pip install -r model/requirements.txt
+
+    - name: Run tests
+      run: pytest model/tests
   
     - name: Create a new run
       run: |
@@ -32,10 +35,28 @@ jobs:
       run: docker build -t training -f model/training.dockerfile ./model
 
     - name: Download dataset
-      run: docker run -it -e MLFLOW_TRACKING_URI -e MLFLOW_RUN_ID -v ./temp_data/:/app/temp_data/ --network=shared_network training python training/download_dataset.py
+      run: >
+        docker run -it \
+        -e MLFLOW_TRACKING_URI \
+        -e MLFLOW_RUN_ID \
+        -v ./temp_data/:/app/temp_data/ \
+        --network=shared_network \
+        training python training/download_dataset.py
 
     - name: Preprocess
-      run: docker run -it -e MLFLOW_TRACKING_URI -e MLFLOW_RUN_ID -v ./temp_data/:/app/temp_data/ --network=shared_network training python training/preprocessing.py
+      run: >
+        docker run -it \
+        -e MLFLOW_TRACKING_URI \
+        -e MLFLOW_RUN_ID \
+        -v ./temp_data/:/app/temp_data/ \
+        --network=shared_network \
+        training python training/preprocessing.py
 
     - name: Run training
-      run: docker run -it -e MLFLOW_TRACKING_URI -e MLFLOW_RUN_ID --network=shared_network training python training/train_model.py
+      run: >
+        docker run -it \
+        -e MLFLOW_TRACKING_URI \
+        -e MLFLOW_RUN_ID \
+        -v ./temp_data/:/app/temp_data/ \
+        --network=shared_network \
+        training python training/train_model.py
