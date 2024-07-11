@@ -19,25 +19,23 @@ jobs:
         python-version: "3.10.12"
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r model/requirements.txt
-
+        pip install mlflow==2.14.2
+  
     - name: Create a new run
       run: |
-        MLFLOW_RUN_ID=$(python model/training/run.py)
+        MLFLOW_RUN_ID=$(python model/training/create_run.py)
         echo "MLFLOW_RUN_ID=$MLFLOW_RUN_ID" >> $GITHUB_ENV
       env:
-        DATABRICKS_USERNAME: ${{ secrets.DATABRICKS_USERNAME }}
-        DATABRICKS_PASSWORD: ${{ secrets.DATABRICKS_PASSWORD }}
+        MLFLOW_TRACKING_URI: ${{ env.OUT_CONTAINER_MLFLOW_TRACKING_URI }}
+
+    - name: Create Docker image
+      run: docker build -t training -f model/training.dockerfile ./model
 
     - name: Download dataset
-      run: python model/training/download_dataset.py
-      env:
-        DATABRICKS_USERNAME: ${{ secrets.DATABRICKS_USERNAME }}
-        DATABRICKS_PASSWORD: ${{ secrets.DATABRICKS_PASSWORD }}
+      run: docker run -it -e MLFLOW_TRACKING_URI -e MLFLOW_RUN_ID -v ./temp_data/:/app/temp_data/ --network=shared_network training python training/download_dataset.py
 
-    - name: Prepare dataset
-      run: python model/training/preprocessing.py
-      env:
-        DATABRICKS_USERNAME: ${{ secrets.DATABRICKS_USERNAME }}
-        DATABRICKS_PASSWORD: ${{ secrets.DATABRICKS_PASSWORD }}
+    - name: Preprocess
+      run: docker run -it -e MLFLOW_TRACKING_URI -e MLFLOW_RUN_ID -v ./temp_data/:/app/temp_data/ --network=shared_network training python training/preprocessing.py
+
+    - name: Run training
+      run: docker run -it -e MLFLOW_TRACKING_URI -e MLFLOW_RUN_ID --network=shared_network training python training/train_model.py

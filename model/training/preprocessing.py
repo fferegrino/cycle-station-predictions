@@ -1,6 +1,8 @@
 import json
 import os
+import sys
 import time
+from pathlib import Path
 
 import mlflow
 import numpy as np
@@ -29,9 +31,13 @@ def read_file(file_path: str) -> pl.DataFrame:
     return df
 
 
-def calculate_regions(df):
-    stations = df.unique(subset=["place_id", "lat", "lon"])
-    stat = stations.filter(pl.col("lat") > 41.5)
+def calculate_regions():
+    regions = {}
+
+    stat = pl.read_csv("training/stations.csv").with_columns(
+        pl.col("lat").cast(pl.Float32),
+        pl.col("lon").cast(pl.Float32),
+    )
     min_lon, max_lon = stat["lon"].min(), stat["lon"].max()
     min_lat, max_lat = stat["lat"].min(), stat["lat"].max()
 
@@ -45,8 +51,6 @@ def calculate_regions(df):
     lon_intervals = list(zip(lon_bins[:-1], lon_bins[1:]))
     lat_intervals = list(zip(lat_bins[:-1], lat_bins[1:]))
 
-    regions = {}
-
     for lat_interval, name in zip(lat_intervals, ["south", "", "north"]):
         for lon_interval, name2 in zip(lon_intervals, ["west", "", "east"]):
             region = f"{name}{name2}" or "centre"
@@ -58,7 +62,6 @@ def calculate_regions(df):
                 .filter(pl.col("lat") <= lat_interval[1])
             )
             if len(filtered) > 0:
-
                 mean_lon = filtered["lon"].mean()
                 mean_lat = filtered["lat"].mean()
 
@@ -79,6 +82,7 @@ def calculate_regions(df):
                 }
             else:
                 print(f"{name}{name2}: No stations")
+
     return regions
 
 
@@ -86,17 +90,18 @@ if __name__ == "__main__":
     with mlflow.start_run(run_id=MLFLOW_RUN_ID):
         t0 = time.time()
         df = read_file("temp_data/weekly-london-cycles-db/data/*.csv")
-        regions = calculate_regions(df)
-
-        with open("temp_data/weekly-london-cycles-db/regions.json", "w") as f:
-            json.dump(regions, f)
-
-        mlflow.log_artifact("temp_data/weekly-london-cycles-db/regions.json")
 
         mlflow.log_param("dataset_shape", df.shape)
         mlflow.log_param("dataset_columns", df.columns)
         mlflow.log_param("dataset_schema", df.schema)
         df.write_parquet("temp_data/weekly-london-cycles-db/data.parquet")
         mlflow.log_artifact("temp_data/weekly-london-cycles-db/data.parquet")
+
+        regions = calculate_regions()
+
+        with open("regions.json", "w") as f:
+            json.dump(regions, f)
+        mlflow.log_artifact("regions.json")
+
         t1 = time.time()
         mlflow.log_metric("dataset_preprocessing_time", t1 - t0)

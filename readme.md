@@ -33,10 +33,16 @@ Create an index pattern in Elastic:
 python monitoring/create_index_pattern.py
 ```
 
-Kickstart the training workflow with:
+Kickstart the training using `act` to simulate GitHub Actions with:
 
 ```bash
-./training.sh
+act --container-architecture linux/amd64 --env-file actions.env
+```
+
+Or using the the local training workflow with:
+
+```bash
+./model/training.sh
 ```
 
 Relevant urls:
