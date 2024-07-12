@@ -6,7 +6,6 @@ See a screenshot of the result below:
 
 ![Screenshot of the user application](docs/images/service-screenshot.png)
 
-
 ## Modelling
 
 There are more than 800 docking stations in the whole network, therefore the approach we follow is to divide the stations into regions given their geographical location by dividing the area of coverage into a grid, where each grid has a model of its own:
@@ -23,7 +22,7 @@ This project uses [Facebook's Prophet](https://facebook.github.io/prophet/). Fro
 
 ## Data
 
-
+The data for this project comes from the TFL's APIs, collected on a regular basis on these repositories: [fferegrino/london-cycles-db](https://github.com/fferegrino/london-cycles-db) and [fferegrino/weekly-london-cycles-db](https://github.com/fferegrino/weekly-london-cycles-db)
 
 ## Inference
 
@@ -88,6 +87,14 @@ The chosen model, Facebook's Prophet, relies on a single feature to forecast the
 ### There is no caching in the prediction service
 
 Currently, all requests for predictions are served afresh, but caching them would be a good option to avoid overloading the prediction service.
+
+### There is no live performance evaluation
+
+Despite collecting some logs, we are not performing any post-deployment analysis of the model to assess its performance on real-world user-initiated requests.
+
+### This project is currently intended to run locally
+
+No previsions have been made to run this project using any cloud infrastructure.
 
 ---
 
