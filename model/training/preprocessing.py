@@ -34,7 +34,7 @@ def read_file(file_path: str) -> pl.DataFrame:
 def calculate_regions():
     regions = {}
 
-    stat = pl.read_csv("training/stations.csv").with_columns(
+    stat = pl.read_csv("model/training/stations.csv").with_columns(
         pl.col("lat").cast(pl.Float32),
         pl.col("lon").cast(pl.Float32),
     )
